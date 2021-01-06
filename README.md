@@ -1,7 +1,7 @@
 # Stabilized Set Dollar Dashboard
 simple dashboard for interacting with Stabilized Set Dollar
 
-forked from [døllar dashboard](https://github.com/emptysetsquad/dollar-dashboard)
+forked from [Stabilized Set Dollar dashboard](https://github.com/stabilizedset/ssd-dashboard)
 
 ## ipfs
 Dashboard can be accessed here: [https://stabilizedset.finance](https://stabilizedset.finance)
@@ -11,8 +11,8 @@ Dashboard can be accessed here: [https://stabilizedset.finance](https://stabiliz
 
 ## install & run locally
 ```shell
-git clone git@github.com:emptysetsquad/dollar-dashboard.git
-cd dollar-dashboard
+git clone git@github.com:stabilizedset/ssd-dashboard.git
+cd ssd-dashboard
 npm install
 
 npm start
