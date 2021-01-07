@@ -29,7 +29,7 @@ const Trade = ({pairBalanceSSD, pairBalanceUSDC, uniswapPair}: TradeProps) => {
         <div style={{flexBasis: '25%'}}>
           <BalanceBlock asset="SSD Liquidity" balance={pairBalanceSSD} suffix={"SSD"}/>
           <Button
-            label="Info"
+            label="Uniswap Info"
             icon={<i className="fas fa-chart-area"/>}
             onClick={() => window.open(UNISWAP_INFO, "_blank")}
           />
@@ -47,7 +47,7 @@ const Trade = ({pairBalanceSSD, pairBalanceUSDC, uniswapPair}: TradeProps) => {
             <Button
               label="DEXTools Chart"
               icon={<i className="fas fa-chart-line"/>}
-              onClick={() => window.open(UNISWAP_INFO, "_blank")}
+              onClick={() => window.open(DEXTOOL, "_blank")}
               style={{
                 marginTop: 4.58
               }}

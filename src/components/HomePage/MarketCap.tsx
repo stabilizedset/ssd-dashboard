@@ -15,7 +15,7 @@ const MarketCap = ({totalSupply, pairBalanceUSDC, pairBalanceSSD}: MarketCapProp
 
   return (
     <div>
-      <div style={{fontSize: 16, padding: 0}}>Market Cap <Icon src="./images/coingecko.ico" onClick={()=> window.open('https://www.coingecko.com/en/coins/true-seigniorage-dollar', '_blank')}
+      <div style={{fontSize: 16, padding: 0}}>Market Cap <Icon src="./images/coingecko.ico" onClick={()=> window.open('https://www.coingecko.com/en/coins/stabilized-set-dollar', '_blank')}
       /></div>
       <div style={{
         fontSize: 24,

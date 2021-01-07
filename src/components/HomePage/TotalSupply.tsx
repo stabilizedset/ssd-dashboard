@@ -13,7 +13,7 @@ const TotalSupply = ({totalSupply}:TotalSupplyProps) => {
   return (
     <div>
       <div style={{fontSize: 16, padding: 0}}>Total Supply <Icon src="./images/etherscan.png"
-      onClick={()=> window.open('https://etherscan.io/token/0x4846239fdf4d4c1aeb26729fa064b0205aca90e1', '_blank')}
+      onClick={()=> window.open('https://etherscan.io/token/0x4846239fdf4d4c1aeb26729fa064b0205aca90e1XXX', '_blank')}
       /></div>
       <div style={{
         fontSize: 24,

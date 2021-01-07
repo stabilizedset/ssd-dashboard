@@ -23,7 +23,7 @@ const Invest = ({totalSupply, totalBonded, SSDLPBonded}: InvestProps) => {
         <div style={{flexBasis: '45%', marginRight: '4%', marginLeft: '2%'}}>
           <Box>
             <div>
-              <div style={{fontSize: 16, padding: 3}}>APR DAO hourly
+              <div style={{fontSize: 16, padding: 3}}>DAO APR hourly
                 <div style={{
                   fontSize: 24,
                   padding: 3,
@@ -34,7 +34,7 @@ const Invest = ({totalSupply, totalBonded, SSDLPBonded}: InvestProps) => {
                   {((dao - 1) * 100).toFixed(2)}%
                 </div>
               </div>
-              <div style={{fontSize: 16, padding: 3}}>APR DAO daily
+              <div style={{fontSize: 16, padding: 3}}>DAO APR daily
                 <div style={{
                   fontSize: 24,
                   padding: 3,
@@ -45,7 +45,7 @@ const Invest = ({totalSupply, totalBonded, SSDLPBonded}: InvestProps) => {
                   {((dao - 1) * 24 * 100).toFixed(2)}%
                 </div>
               </div>
-              <div style={{fontSize: 16, padding: 3}}>APR DAO weekly
+              <div style={{fontSize: 16, padding: 3}}>DAO APR weekly
                 <div style={{
                   fontSize: 24,
                   padding: 3,
@@ -63,7 +63,7 @@ const Invest = ({totalSupply, totalBonded, SSDLPBonded}: InvestProps) => {
           <div style={{flexBasis: '45%', marginLeft: '1%'}}>
             <Box>
               <div>
-                <div style={{fontSize: 16, padding: 3}}>APR LP hourly
+                <div style={{fontSize: 16, padding: 3}}>LP APR hourly
                   <div style={{
                     fontSize: 24,
                     padding: 3,
@@ -74,7 +74,7 @@ const Invest = ({totalSupply, totalBonded, SSDLPBonded}: InvestProps) => {
                     {((lpHourly - 1) * 100).toFixed(2)}%
                   </div>
                 </div>
-                <div style={{fontSize: 16, padding: 3}}>APR LP daily
+                <div style={{fontSize: 16, padding: 3}}>LP APR daily
                   <div style={{
                     fontSize: 24,
                     padding: 3,
@@ -85,7 +85,7 @@ const Invest = ({totalSupply, totalBonded, SSDLPBonded}: InvestProps) => {
                     {((lpDaily - 1) * 100).toFixed(2)}%
                   </div>
                 </div>
-                <div style={{fontSize: 16, padding: 3}}>APR LP weekly
+                <div style={{fontSize: 16, padding: 3}}>LP APR weekly
                   <div style={{
                     fontSize: 24,
                     padding: 3,
