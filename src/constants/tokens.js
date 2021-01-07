@@ -11,7 +11,7 @@ export const USDC = {
 };
 
 export const SSD = {
-  addr: '0x36F3FD68E7325a35EB768F1AedaAe9EA0689d723',
+  addr: '0x7bf5898a9c24818a90d9763bbf4cd1432645c17f',
   decimals: 18,
   symbol: 'SSD',
 };
