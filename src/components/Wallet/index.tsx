@@ -52,7 +52,7 @@ function Wallet({ user }: {user: string}) {
     async function updateUserInfo() {
       const [
         ssdBalance, ssdAllowance, ssdsBalance, ssdsSupply, stagedBalance, bondedBalance, status, poolAddress,
-        fluidUntilStr, lockedUntilStr
+        fluidUntilStr
       ] = await Promise.all([
         getTokenBalance(SSD.addr, user),
         getTokenAllowance(SSD.addr, user, SSDS.addr),
@@ -64,7 +64,7 @@ function Wallet({ user }: {user: string}) {
         getPoolAddress(),
 
         getFluidUntil(SSDS.addr, user),
-        getLockedUntil(SSDS.addr, user),
+        //getLockedUntil(SSDS.addr, user),
       ]);
 
       const userSSDBalance = toTokenUnitsBN(ssdBalance, SSD.decimals);
@@ -74,7 +74,7 @@ function Wallet({ user }: {user: string}) {
       const userBondedBalance = toTokenUnitsBN(bondedBalance, SSDS.decimals);
       const userStatus = parseInt(status, 10);
       const fluidUntil = parseInt(fluidUntilStr, 10);
-      const lockedUntil = parseInt(lockedUntilStr, 10);
+      //const lockedUntil = parseInt(lockedUntilStr, 10);
 
       if (!isCancelled) {
         setUserSSDBalance(new BigNumber(userSSDBalance));
@@ -84,7 +84,7 @@ function Wallet({ user }: {user: string}) {
         setUserStagedBalance(new BigNumber(userStagedBalance));
         setUserBondedBalance(new BigNumber(userBondedBalance));
         setUserStatus(userStatus);
-        setUserStatusUnlocked(Math.max(fluidUntil, lockedUntil))
+        setUserStatusUnlocked(Math.max(fluidUntil))
         setLockup(poolAddress === DollarPool4 ? DAO_EXIT_LOCKUP_EPOCHS : 1);
       }
     }

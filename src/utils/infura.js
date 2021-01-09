@@ -91,7 +91,7 @@ export const getStatusOf = async (dao, account) => {
  */
 export const getFluidUntil = async (dao, account) => {
   const daoContract = new web3.eth.Contract(daoAbi, dao);
-  return daoContract.methods.fluidUntil(account).call();
+  return daoContract.methods.statusOf(account).call();
 };
 
 /**
