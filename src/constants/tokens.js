@@ -1,5 +1,5 @@
 export const UNI = {
-  addr: '0x88ff79eB2Bc5850F27315415da8685282C7610F9',
+  addr: '0x190f5cd36c49e4d1b67166356aa9ac788f7067a2',
   decimals: 18,
   symbol: 'UNI',
 };
@@ -17,7 +17,7 @@ export const SSD = {
 };
 
 export const SSDS = {
-  addr: '0x443D2f2755DB5942601fa062Cc248aAA153313D3',
+  addr: '0x68098cff6338425cd1a253a9a26eF63712646e46',
   decimals: 18,
   symbol: 'SSDS',
 };

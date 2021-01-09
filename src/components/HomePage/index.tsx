@@ -24,7 +24,7 @@ import Invest from "./Invest";
 import Trade from "./Trade";
 
 function epochformatted() {
-  const epochStart = 1599148800;
+  const epochStart = 1610114400;
   const epochPeriod = 2 * 60 * 60;
   const hour = 60 * 60;
   const minute = 60;
