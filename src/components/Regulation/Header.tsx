@@ -33,8 +33,8 @@ const RegulationHeader = ({
 }: RegulationHeaderProps) => {
   const daoTotalSupply = totalBonded.plus(totalStaged).plus(totalRedeemable);
   const poolTotalSupply = poolLiquidity.plus(poolRewarded).plus(poolClaimable);
-  const legacyPoolTotalSupply = legacyPoolRewarded.plus(legacyPoolClaimable);
-  const circulatingSupply = totalSupply.minus(daoTotalSupply).minus(poolTotalSupply).minus(legacyPoolTotalSupply);
+  // const legacyPoolTotalSupply = legacyPoolRewarded.plus(legacyPoolClaimable);
+  const circulatingSupply = totalSupply.minus(daoTotalSupply).minus(poolTotalSupply);
 
   return (
     <>

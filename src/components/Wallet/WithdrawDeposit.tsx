@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Box, Button, IconCirclePlus, IconCircleMinus, IconLock
 } from '@aragon/ui';
 import BigNumber from 'bignumber.js';
+import {OverlayTrigger, Tooltip} from "react-bootstrap";
+
 import {
   BalanceBlock, MaxButton,
 } from '../common/index';
@@ -21,8 +23,8 @@ type WithdrawDepositProps = {
 };
 
 function WithdrawDeposit({
-  user, balance, allowance, stagedBalance, status
-}: WithdrawDepositProps) {
+                           user, balance, allowance, stagedBalance, status
+                         }: WithdrawDepositProps) {
   const [depositAmount, setDepositAmount] = useState(new BigNumber(0));
   const [withdrawAmount, setWithdrawAmount] = useState(new BigNumber(0));
 
@@ -53,18 +55,39 @@ function WithdrawDeposit({
                 </>
               </div>
               <div style={{width: '40%', minWidth: '6em'}}>
-                <Button
-                  wide
-                  icon={status === 0 ? <IconCirclePlus/> : <IconLock/>}
-                  label="Deposit"
-                  onClick={() => {
-                    deposit(
-                      SSDS.addr,
-                      toBaseUnitBN(depositAmount, SSD.decimals),
-                    );
-                  }}
-                  disabled={status === 1 || !isPos(depositAmount) || depositAmount.isGreaterThan(balance)}
-                />
+                {
+                  status === 1 || !isPos(depositAmount) || depositAmount.isGreaterThan(balance)
+                    ? <OverlayTrigger
+                      placement="bottom"
+                      overlay={
+                        <Tooltip id="tooltip">
+                          Make sure the value &gt; 0 and your status is Unlocked.
+                        </Tooltip>
+                      }
+                    >
+                      <div style={{display: 'inline-block', cursor: 'not-allowed'}}>
+                        <Button
+                          style={{pointerEvents: 'none'}}
+                          wide
+                          icon={status === 0 ? <IconCirclePlus/> : <IconLock/>}
+                          label="Deposit"
+                          disabled={status === 1 || !isPos(depositAmount) || depositAmount.isGreaterThan(balance)}
+                        />
+                      </div>
+                    </OverlayTrigger>
+                    : <Button
+                      wide
+                      icon={status === 0 ? <IconCirclePlus/> : <IconLock/>}
+                      label="Deposit"
+                      onClick={() => {
+                        deposit(
+                          SSDS.addr,
+                          toBaseUnitBN(depositAmount, SSD.decimals),
+                        );
+                      }}
+                    />
+                }
+
               </div>
             </div>
           </div>
@@ -88,21 +111,43 @@ function WithdrawDeposit({
                 </>
               </div>
               <div style={{width: '40%', minWidth: '7em'}}>
-                <Button
-                  wide
-                  icon={status === 0 ? <IconCircleMinus/> : <IconLock/>}
-                  label="Withdraw"
-                  onClick={() => {
-                    withdraw(
-                      SSDS.addr,
-                      toBaseUnitBN(withdrawAmount, SSD.decimals),
-                    );
-                  }}
-                  disabled={status === 1 || !isPos(withdrawAmount) || withdrawAmount.isGreaterThan(stagedBalance)}
-                />
+                {
+                  status === 1 || !isPos(withdrawAmount) || withdrawAmount.isGreaterThan(stagedBalance)
+                    ? <OverlayTrigger
+                      placement="bottom"
+                      overlay={
+                        <Tooltip id="tooltip">
+                          Make sure the value &gt; 0 and your status is Unlocked.
+                        </Tooltip>
+                      }
+                    >
+                      <div style={{display: 'inline-block', cursor: 'not-allowed'}}>
+                        <Button
+                          style={{pointerEvents: 'none'}}
+                          wide
+                          icon={status === 0 ? <IconCircleMinus/> : <IconLock/>}
+                          label="Withdraw"
+                          disabled={status === 1 || !isPos(withdrawAmount) || withdrawAmount.isGreaterThan(stagedBalance)}
+                        />
+                      </div>
+                    </OverlayTrigger>
+                    : <Button
+                      wide
+                      icon={status === 0 ? <IconCircleMinus/> : <IconLock/>}
+                      label="Withdraw"
+                      onClick={() => {
+                        withdraw(
+                          SSDS.addr,
+                          toBaseUnitBN(withdrawAmount, SSD.decimals),
+                        );
+                      }}
+                    />
+                }
+
               </div>
             </div>
           </div>
+
         </div>
         :
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
@@ -115,7 +160,7 @@ function WithdrawDeposit({
           <div style={{flexBasis: '33%', paddingTop: '2%'}}>
             <Button
               wide
-              icon={<IconCirclePlus />}
+              icon={<IconCirclePlus/>}
               label="Approve"
               onClick={() => {
                 approve(SSD.addr, SSDS.addr);
@@ -125,6 +170,9 @@ function WithdrawDeposit({
           </div>
         </div>
       }
+      <div style={{width: '100%', paddingTop: '2%', textAlign: 'center'}}>
+        <span style={{opacity: 0.5}}>Staging requires your status as Unlocked.</span>
+      </div>
     </Box>
   );
 }

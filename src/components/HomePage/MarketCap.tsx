@@ -15,11 +15,14 @@ const MarketCap = ({totalSupply, pairBalanceUSDC, pairBalanceSSD}: MarketCapProp
 
   return (
     <div>
-      <div style={{fontSize: 16, padding: 0}}>Market Cap <Icon src="./images/coingecko.ico" onClick={()=> window.open('https://www.coingecko.com/en/coins/stabilized-set-dollar', '_blank')}
-      /></div>
+      <div style={{fontSize: 16, padding: 3}}>Market Cap
+        <Icon src="./images/coingecko.ico"
+              onClick={() => window.open('https://www.coingecko.com/en/coins/stabilized-set-dollar', '_blank')}
+        />
+      </div>
       <div style={{
         fontSize: 24,
-        padding: 1,
+        padding: 3,
         fontWeight: 400,
         lineHeight: 1.5,
         fontFamily: 'aragon-ui-monospace, monospace'
@@ -30,6 +33,7 @@ const MarketCap = ({totalSupply, pairBalanceUSDC, pairBalanceSSD}: MarketCapProp
 };
 
 const Icon = styled.img`
+  margin: 0 5px;
   border: 1px solid #ffffff;
   border-radius: 10px;
   background-color: #ffffff;

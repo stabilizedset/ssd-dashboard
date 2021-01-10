@@ -12,6 +12,7 @@ function EpochDetail({ user }: {user: string}) {
 
   const [epoch, setEpoch] = useState(0);
   const [epochTime, setEpochTime] = useState(0);
+
   useEffect(() => {
     let isCancelled = false;
 

@@ -1,0 +1,145 @@
+.home-box {
+    background-size: cover;
+    display: flex;
+    justify-content: space-between;
+    padding: 5% 0% 0% 0% !important;
+    margin-bottom: 40px;
+}
+.home-box > div {
+    padding: 0;
+    background: rgba(0, 0, 0, 0.16);
+    border: 1px solid #454545;
+    border-radius: 10px 10px 0 0;
+    color: #fff !important;
+    word-break: break-all;
+}
+.home-box > div:first-child {
+    border-radius: 0 10px 0 0;
+}
+.home-box > div:last-child {
+    border-radius: 10px 0 0 0;
+}
+
+.home-box > div > div{
+    padding: 5% 5% 5% 5%
+}
+.box-trade {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0 !important;
+}
+.box-trade > div {
+    box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    text-align: center;
+    flex-basis: 23%;
+    padding: 30px 0;
+}
+.box-invest {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px 0 !important;
+}
+.box-invest > div {
+    box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    flex-basis: 49%;
+    padding: 40px;
+}
+.box-regulation {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px 0 !important;
+}
+.box-regulation > div {
+    box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    flex-basis: 32%;
+    padding: 40px 0;
+}
+.box-cupons {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 40px 0 !important;
+}
+.box-cupons > div {
+    box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    flex-basis: 32%;
+    padding: 40px 0;
+}
+.box-regulation > div > div{
+    padding: 0 40px;
+}
+.button-home {
+    border-radius: 10px !important;
+    border: none !important;
+    box-shadow: 0 5px 5px rgba(0,0,0,0.15) !important;
+    min-width: 150px !important;
+}
+.invest {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+@media (max-width: 1025px) {
+    .home-box > div{
+        text-align: center;
+        word-break: break-all;
+    }
+
+    .box-trade > div {
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+        display: flex;
+    }
+}
+
+@media (max-width: 568px) {
+    .box-trade {
+        justify-content: space-evenly;
+    }
+    .box-trade > div {
+        flex-basis: 40%;
+    }
+    .box-regulation {
+        justify-content: center;
+    }
+    .box-regulation > div {
+        flex-basis: 90%;
+        margin-top: 20px;
+    }
+    .box-cupons > div {
+        flex-basis: 45%;
+    }
+}
+
+
+@media (max-width: 426px) {
+    .home-box > div {
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 10px !important;
+        margin: 10px;
+    }
+    .box-trade {
+        justify-content: space-evenly;
+    }
+    .box-trade > div {
+        margin: 10px;
+    }
+    .box-invest > div {
+        margin: 10px
+    }
+    .box-regulation {
+        justify-content: center;
+    }
+    .box-regulation > div {
+        margin: 10px;
+        margin-top: 20px;
+    }
+    .box-cupons > div {
+        flex-basis: 45%;
+        margin: 10px
+    }
+}

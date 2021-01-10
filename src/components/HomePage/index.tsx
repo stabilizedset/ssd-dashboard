@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import { useHistory } from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
+import {Box} from '@aragon/ui';
 import styled from 'styled-components'
+import './style.css';
 import BigNumber from "bignumber.js";
 import {
   getPoolTotalClaimable,
@@ -12,16 +14,15 @@ import {
   getTotalStaged
 } from "../../utils/infura";
 import {SSD, SSDS, UNI, USDC} from "../../constants/tokens";
-import {getLegacyPoolAddress, getPoolAddress} from "../../utils/pool";
 import {toTokenUnitsBN} from "../../utils/number";
-import {
-  Box, LinkBase, Tag,
-} from '@aragon/ui';
-import EpochBlock from "../common/EpochBlock";
-import MarketCap from "./MarketCap";
-import TotalSupply from "./TotalSupply";
-import Invest from "./Invest";
 import Trade from "./Trade";
+import MainButton from "./MainButton";
+import {getLegacyPoolAddress, getPoolAddress} from "../../utils/pool";
+import Regulation from "./Regulation";
+import TotalSupply from "./TotalSupply";
+import MarketCap from "./MarketCap";
+import Invest from "./Invest";
+import EpochBlock from "../common/EpochBlock";
 
 function epochformatted() {
   const epochStart = 1610114400;
@@ -45,7 +46,7 @@ type HomePageProps = {
 };
 
 function HomePage({user}: HomePageProps) {
- const history = useHistory();
+  const history = useHistory();
   const [pairBalanceSSD, setPairBalanceSSD] = useState(new BigNumber(0));
   const [pairBalanceUSDC, setPairBalanceUSDC] = useState(new BigNumber(0));
   const [totalSupply, setTotalSupply] = useState(new BigNumber(0));
@@ -79,7 +80,6 @@ function HomePage({user}: HomePageProps) {
         getTokenBalance(USDC.addr, UNI.addr),
 
         getTokenTotalSupply(SSD.addr),
-
         getTotalBonded(SSDS.addr),
         getTotalStaged(SSDS.addr),
         getTotalRedeemable(SSDS.addr),
@@ -129,35 +129,49 @@ function HomePage({user}: HomePageProps) {
 
   return (
     <>
-      <div>
-        <Trade
-          pairBalanceSSD={pairBalanceSSD}
-          pairBalanceUSDC={pairBalanceUSDC}
-          uniswapPair={UNI.addr}
-        />
-      </div>
-      <div style={{ padding: '1%', display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ flexBasis: '68%' }} >
-         <Invest
-            totalSupply={totalSupply}
-            totalBonded={totalBonded}
-            SSDLPBonded={pairBalanceSSD}
-          />
-        </div>
-        <div style={{ flexBasis: '30%', flexGrow: 1, marginRight: '2%', textAlign: 'right' }}>
-          <Box>
+      <Container className="home-box">
+        <div style={{flexBasis: '30%'}}>
+          <div style={{height: '100%'}}>
             <EpochBlock epoch={epochTime}/>
-             <MarketCap
+          </div>
+        </div>
+        <div style={{flexBasis: '30%'}}>
+          <div style={{height: '100%'}}>
+            <TotalSupply totalSupply={totalSupply}/>
+          </div>
+        </div>
+        <div style={{flexBasis: '30%'}}>
+          <div style={{height: '100%'}}>
+            <MarketCap
               totalSupply={totalSupply}
               pairBalanceUSDC={pairBalanceUSDC}
               pairBalanceSSD={pairBalanceSSD}
             />
-            <TotalSupply totalSupply={totalSupply}/>
-          </Box>
+          </div>
         </div>
-      </div>
+      </Container>
+      <Trade
+        pairBalanceSSD={pairBalanceSSD}
+        pairBalanceUSDC={pairBalanceUSDC}
+        uniswapPair={UNI.addr}
+      />
+      <Invest
+        totalSupply={totalSupply}
+        totalBonded={totalBonded}
+        SSDLPBonded={pairBalanceSSD}
+      />
+      <Regulation
+        totalSupply={totalSupply}
 
-      <div style={{ padding: '1%', display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+        totalBonded={totalBonded}
+        totalStaged={totalStaged}
+        totalRedeemable={totalRedeemable}
+
+        poolLiquidity={poolLiquidity}
+        poolRewarded={poolTotalRewarded}
+        poolClaimable={poolTotalClaimable}
+      />
+ <div style={{ padding: '1%', display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ flexBasis: '30%', marginRight: '3%', marginLeft: '2%'  }}>
           <MainButton
             title="DAO"
@@ -225,41 +239,20 @@ function HomePage({user}: HomePageProps) {
           />
         </div>
       </div>
+
     </>
   );
 }
 
-type MainButtonPropx = {
-  title: string,
-  description: string,
-  icon: any,
-  onClick: Function,
-  tag?:string
-}
-
-function MainButton({
-  title, description, icon, onClick, tag,
-}:MainButtonPropx) {
-  return (
-    <LinkBase onClick={onClick} style={{ width: '100%' }}>
-      <Box>
-        <div style={{ padding: 10, fontSize: 18 }}>
-          {title}
-          {tag ? <Tag>{tag}</Tag> : <></>}
-        </div>
-        <span style={{ fontSize: 48 }}>
-          {icon}
-        </span>
-        {/*<img alt="icon" style={{ padding: 10, height: 64 }} src={iconUrl} />*/}
-        <div style={{ paddingTop: 5, opacity: 0.5 }}>
-          {' '}
-          {description}
-          {' '}
-        </div>
-
-      </Box>
-    </LinkBase>
-  );
-}
+const Container = styled.div`
+  display: flex;
+  padding: 10% 1% 3% 1%;
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+  }
+  @media (max-width: 522px) {
+    display: block;
+  }
+`
 
 export default HomePage;

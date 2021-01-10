@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Box, Button, IconArrowDown
 } from '@aragon/ui';
 import BigNumber from 'bignumber.js';
+import {OverlayTrigger, Tooltip} from "react-bootstrap";
+
 import {
   BalanceBlock, MaxButton,
 } from '../common/index';
@@ -18,8 +20,8 @@ type ClaimProps = {
 };
 
 function Claim({
-  poolAddress, claimable, status
-}: ClaimProps) {
+                 poolAddress, claimable, status
+               }: ClaimProps) {
   const [claimAmount, setClaimAmount] = useState(new BigNumber(0));
 
   return (
@@ -27,7 +29,7 @@ function Claim({
       <div style={{display: 'flex', flexWrap: 'wrap'}}>
         {/* total Issued */}
         <div style={{flexBasis: '32%'}}>
-          <BalanceBlock asset="Claimable" balance={claimable} suffix={"SSD"} />
+          <BalanceBlock asset="Claimable" balance={claimable} suffix={"SSD"}/>
         </div>
         {/* Deposit UNI-V2 into Pool */}
         <div style={{flexBasis: '35%'}}/>
@@ -49,25 +51,45 @@ function Claim({
               </>
             </div>
             <div style={{width: '40%', minWidth: '6em'}}>
-              <Button
-                wide
-                icon={<IconArrowDown/>}
-                label="Claim"
-                onClick={() => {
-                  claimPool(
-                    poolAddress,
-                    toBaseUnitBN(claimAmount, SSD.decimals),
-                    (hash) => setClaimAmount(new BigNumber(0))
-                  );
-                }}
-                disabled={poolAddress === '' || status !== 0 || !isPos(claimAmount)}
-              />
+              {
+                (poolAddress === '' || status !== 0 || !isPos(claimAmount))
+                  ? <OverlayTrigger
+                    placement="bottom"
+                    overlay={
+                      <Tooltip id="tooltip">
+                        Make sure the value &gt; 0 and your status is Unlocked.
+                      </Tooltip>
+                    }
+                  >
+                    <div style={{display: 'inline-block', cursor: 'not-allowed'}}>
+                      <Button
+                        style={{pointerEvents: 'none'}}
+                        wide
+                        icon={<IconArrowDown/>}
+                        label="Claim"
+                        disabled={poolAddress === '' || status !== 0 || !isPos(claimAmount)}
+                      />
+                    </div>
+                  </OverlayTrigger>
+                  : <Button
+                    wide
+                    icon={<IconArrowDown/>}
+                    label="Claim"
+                    onClick={() => {
+                      claimPool(
+                        poolAddress,
+                        toBaseUnitBN(claimAmount, SSD.decimals),
+                        (hash) => setClaimAmount(new BigNumber(0))
+                      );
+                    }}
+                  />
+              }
             </div>
           </div>
         </div>
       </div>
       <div style={{width: '100%', paddingTop: '2%', textAlign: 'center'}}>
-        <span style={{ opacity: 0.5 }}> Unbond to make rewards claimable after your status is Unlocked </span>
+        <span style={{opacity: 0.5}}> Claiming claimable SSD requires your status as Unlocked </span>
       </div>
     </Box>
   );

@@ -5,11 +5,20 @@ import BigNumber from 'bignumber.js';
 import { notify } from './txNotifier.ts';
 import { UniswapV2Router02 } from '../constants/contracts';
 
-import { SSD, USDC } from '../constants/tokens';
+import { SSD, USDC, ESD } from '../constants/tokens';
 
 const uniswapRouterAbi = require('../constants/abi/UniswapV2Router02.json');
 const testnetUSDCAbi = require('../constants/abi/TestnetUSDC.json');
 const daoAbi = require('../constants/abi/Implementation.json');
+const daoESDAbi = require('../constants/abi/ImplementationESD.json');
+const daoDSDAbi = require('../constants/abi/ImplementationDSD.json');
+const daoTSDAbi = require('../constants/abi/ImplementationTSD.json');
+const daoZAIAbi = require('../constants/abi/ImplementationZai.json');
+const daoUSDTAbi = require('../constants/abi/ImplementationUSDT.json');
+const daoDAIAbi = require('../constants/abi/ImplementationDAI.json');
+const daoWETHAbi = require('../constants/abi/ImplementationWETH.json');
+const daoWBTCAbi = require('../constants/abi/ImplementationWBTC.json');
+const uniswapv2DSDAbi = require('../constants/abi/UniswapV2PairUSDC-SSD.json');
 const poolAbi = require('../constants/abi/Pool.json');
 
 const DEADLINE_FROM_NOW = 60 * 15;
@@ -66,16 +75,129 @@ export const approve = async (tokenAddr, spender, amt = UINT256_MAX) => {
     });
 };
 
-export const mintTestnetUSDC = async (amount) => {
+export const approveSSD = async (tokenAddr, spender, amt = UINT256_MAX) => {
   const account = await checkConnectedAndGetAddress();
-  const usdc = new window.web3.eth.Contract(testnetUSDCAbi, USDC.addr);
-
-  await usdc.methods.mint(account, new BigNumber(amount).toFixed())
+  const oToken = new window.web3.eth.Contract(daoAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
     .send({ from: account })
     .on('transactionHash', (hash) => {
       notify.hash(hash);
     });
 };
+
+export const approveESD = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(daoESDAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
+export const approveDSD = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(daoDSDAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
+export const approveTSD = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(daoTSDAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
+export const approveZAI = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(daoZAIAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
+export const approveUSDT = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(daoUSDTAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
+export const approveDAI = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(daoDAIAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
+export const approveWBTC = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(daoWBTCAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+export const approveWETH = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(daoWETHAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
+
+
+
+export const approvePairDSD = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(uniswapv2DSDAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
+export const approvePairSSD = async (tokenAddr, spender, amt = UINT256_MAX) => {
+  const account = await checkConnectedAndGetAddress();
+  const oToken = new window.web3.eth.Contract(uniswapv2DSDAbi, tokenAddr);
+  await oToken.methods
+    .approve(spender, amt)
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
 
 /**
  * Uniswap Protocol
@@ -89,7 +211,7 @@ export const buySSD = async (buyAmount, maxInputAmount) => {
   await router.methods.swapTokensForExactTokens(
     buyAmount,
     maxInputAmount,
-    [USDC.addr, SSD.addr],
+    [ESD.addr, SSD.addr],
     account,
     deadline,
   )
@@ -369,6 +491,19 @@ export const claimPool = async (pool, amount, callback) => {
       callback(hash);
     });
 };
+
+
+export const mintTestnetUSDC = async (amount) => {
+  const account = await checkConnectedAndGetAddress();
+  const usdc = new window.web3.eth.Contract(testnetUSDCAbi, USDC.addr);
+
+  await usdc.methods.mint(account, new BigNumber(amount).toFixed())
+    .send({ from: account })
+    .on('transactionHash', (hash) => {
+      notify.hash(hash);
+    });
+};
+
 
 export const providePool = async (pool, amount, callback) => {
   const account = await checkConnectedAndGetAddress();

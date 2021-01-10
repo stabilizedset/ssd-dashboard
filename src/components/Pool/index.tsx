@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
+import { Header } from '@aragon/ui';
 import BigNumber from 'bignumber.js';
+
 import {
   getPoolBalanceOfBonded, getPoolBalanceOfClaimable,
   getPoolBalanceOfRewarded,
@@ -9,12 +10,13 @@ import {
   getPoolStatusOf, getPoolTotalBonded,
   getTokenAllowance,
   getTokenBalance,
-  getPoolFluidUntil
+  getPoolFluidUntil, getTokenTotalSupply, loadFluidStatusPool
 } from '../../utils/infura';
-import {SSD, UNI, USDC} from "../../constants/tokens";
+import {SSD, UNI, USDC, ZAP, ESD, DSD, TSD, DAI, ZAI, USDT,WETH,WBTC} from "../../constants/tokens";
+
+
 import {POOL_EXIT_LOCKUP_EPOCHS} from "../../constants/values";
 import { toTokenUnitsBN } from '../../utils/number';
-import { Header } from '@aragon/ui';
 
 import WithdrawDeposit from "./WithdrawDeposit";
 import BondUnbond from "./BondUnbond";
@@ -23,10 +25,10 @@ import Claim from "./Claim";
 import Provide from "./Provide";
 import IconHeader from "../common/IconHeader";
 import Migrate from "./Migrate";
+import AddUni from "./AddUni";
 import {getLegacyPoolAddress, getPoolAddress} from "../../utils/pool";
 import {DollarPool4} from "../../constants/contracts";
-
-
+import Invest from "./Invest";
 
 function Pool({ user }: {user: string}) {
   const { override } = useParams();
@@ -54,9 +56,51 @@ function Pool({ user }: {user: string}) {
   const [legacyUserClaimableBalance, setLegacyUserClaimableBalance] = useState(new BigNumber(0));
   const [legacyUserStatus, setLegacyUserStatus] = useState(0);
   const [lockup, setLockup] = useState(0);
+  const [totalSupply, setTotalSupply] = useState(new BigNumber(0));
+  const [fluidStatus, setFluidStatus] = useState({
+    lastUnbond: undefined, lastBond: undefined, fluidEpoch: undefined
+  });
+  const [zapUSDCAllowance, setZapUSDCAllowance] = useState(new BigNumber(0));
+  const [zapSSDAllowance, setZapSSDAllowance] = useState(new BigNumber(0));
+  const [zapESDAllowance, setZapESDAllowance] = useState(new BigNumber(0));
+  const [zapDSDAllowance, setZapDSDAllowance] = useState(new BigNumber(0));
+  const [zapTSDAllowance, setZapTSDAllowance] = useState(new BigNumber(0));
+  const [zapZaiAllowance, setZapZaiAllowance] = useState(new BigNumber(0));
+  const [zapUSDTAllowance, setZapUSDTAllowance] = useState(new BigNumber(0));
+  const [zapDAIAllowance, setZapDAIAllowance] = useState(new BigNumber(0));
+  const [zapWETHAllowance, setZapWETHAllowance] = useState(new BigNumber(0));
+  const [zapWBTCAllowance, setZapWBTCAllowance] = useState(new BigNumber(0));
+
+  const [userSSDBalance, setUserSSDBalance] = useState(new BigNumber(0));
+  const [userESDBalance, setUserESDBalance] = useState(new BigNumber(0));
+  const [userDSDBalance, setUserDSDBalance] = useState(new BigNumber(0));
+  const [userTSDBalance, setUserTSDBalance] = useState(new BigNumber(0));
+  const [userZaiBalance, setUserZaiBalance] = useState(new BigNumber(0));
+  const [userUSDTBalance, setUserUSDTBalance] = useState(new BigNumber(0));
+  const [userDAIBalance, setUserDAIBalance] = useState(new BigNumber(0));
+  const [userWETHBalance, setUserWETHBalance] = useState(new BigNumber(0));
+  const [userWBTCBalance, setUserWBTCBalance] = useState(new BigNumber(0));
 
   //Update User balances
   useEffect(() => {
+    let isCancelledApr = false;
+    async function updateAPR() {
+      const [
+        totalSupplyStr,
+        totalBondedStr,
+      ] = await Promise.all([
+        getTokenTotalSupply(SSD.addr),
+        getTokenBalance(SSD.addr, UNI.addr),
+      ]);
+
+      if (!isCancelledApr) {
+        setTotalSupply(toTokenUnitsBN(totalSupplyStr, SSD.decimals));
+        setPairBalanceSSD(toTokenUnitsBN(totalBondedStr, SSD.decimals));
+      }
+    }
+
+    updateAPR();
+
     if (user === '') {
       setPoolAddress("");
       setPoolTotalBonded(new BigNumber(0));
@@ -77,6 +121,24 @@ function Pool({ user }: {user: string}) {
       setLegacyUserRewardedBalance(new BigNumber(0));
       setLegacyUserClaimableBalance(new BigNumber(0));
       setLegacyUserStatus(0);
+      setZapUSDCAllowance(new BigNumber(0));
+      setZapUSDTAllowance(new BigNumber(0));
+      setZapSSDAllowance(new BigNumber(0));
+      setZapESDAllowance(new BigNumber(0));
+      setZapDSDAllowance(new BigNumber(0));
+      setZapTSDAllowance(new BigNumber(0));
+      setZapZaiAllowance(new BigNumber(0));
+      setZapDAIAllowance(new BigNumber(0));
+      setZapWETHAllowance(new BigNumber(0));
+      setZapWBTCAllowance(new BigNumber(0));
+      setUserSSDBalance(new BigNumber(0));
+      setUserESDBalance(new BigNumber(0));
+      setUserDSDBalance(new BigNumber(0));
+      setUserTSDBalance(new BigNumber(0));
+      setUserWETHBalance(new BigNumber(0));
+      setUserWBTCBalance(new BigNumber(0));
+      setUserDAIBalance(new BigNumber(0));
+      setUserZaiBalance(new BigNumber(0));
       return;
     }
     let isCancelled = false;
@@ -86,10 +148,44 @@ function Pool({ user }: {user: string}) {
       const legacyPoolAddress = getLegacyPoolAddress(poolAddressStr);
 
       const [
-        poolTotalBondedStr, pairBalanceSSDStr, pairBalanceUSDCStr, balance, usdcBalance,
-        allowance, usdcAllowance, stagedBalance, bondedBalance,
-        rewardedBalance, claimableBalance, status, fluidUntilStr,
-        legacyStagedBalance, legacyBondedBalance, legacyRewardedBalance, legacyClaimableBalance, legacyStatus
+        poolTotalBondedStr,
+        pairBalanceSSDStr,
+        pairBalanceUSDCStr,
+        balance,
+        usdcBalance,
+        allowance,
+        usdcAllowance,
+        stagedBalance,
+        bondedBalance,
+        rewardedBalance,
+        claimableBalance,
+        status,
+        fluidUntilStr,
+        legacyStagedBalance,
+        legacyBondedBalance,
+        legacyRewardedBalance,
+        legacyClaimableBalance,
+        legacyStatus,
+        fluidStatusStr,
+        zapUSDCAllowance,
+        zapSSDAllowance,
+        zapESDAllowance,
+        zapDSDAllowance,
+        zapTSDAllowance,
+        zapZaiAllowance,
+        zapUSDTAllowance,
+        zapDAIAllowance,
+        zapWETHTAllowance,
+        zapWBTCAllowance,
+        userSSDBalanceStr,
+        userESDBalanceStr,
+        userDSDBalanceStr,
+        userTSDBalanceStr,
+        userZaiBalanceStr,
+        userUSDTBalanceStr,
+        userDAIBalanceStr,
+        userWETHBalanceStr,
+        userWBTCBalanceStr,
       ] = await Promise.all([
         getPoolTotalBonded(poolAddressStr),
         getTokenBalance(SSD.addr, UNI.addr),
@@ -111,7 +207,27 @@ function Pool({ user }: {user: string}) {
         getPoolBalanceOfBonded(legacyPoolAddress, user),
         getPoolBalanceOfRewarded(legacyPoolAddress, user),
         getPoolBalanceOfClaimable(legacyPoolAddress, user),
-        getPoolStatusOf(legacyPoolAddress, user)
+        getPoolStatusOf(legacyPoolAddress, user),
+        loadFluidStatusPool(poolAddressStr, user),
+        getTokenAllowance(USDC.addr, user, ZAP.addr),
+        getTokenAllowance(SSD.addr, user, ZAP.addr),
+        getTokenAllowance(ESD.addr, user, ZAP.addr),
+        getTokenAllowance(DSD.addr, user, ZAP.addr),
+        getTokenAllowance(TSD.addr, user, ZAP.addr),
+        getTokenAllowance(ZAI.addr, user, ZAP.addr),
+        getTokenAllowance(USDT.addr, user, ZAP.addr),
+        getTokenAllowance(DAI.addr, user, ZAP.addr),
+        getTokenAllowance(WBTC.addr, user, ZAP.addr),
+        getTokenAllowance(WETH.addr, user, ZAP.addr),
+        getTokenBalance(SSD.addr, user),
+        getTokenBalance(ESD.addr, user),
+        getTokenBalance(DSD.addr, user),
+        getTokenBalance(TSD.addr, user),
+        getTokenBalance(ZAI.addr, user),
+        getTokenBalance(USDT.addr, user),
+        getTokenBalance(WBTC.addr, user),
+        getTokenBalance(DAI.addr, user),
+        getTokenBalance(WETH.addr, user),
       ]);
 
       const poolTotalBonded = toTokenUnitsBN(poolTotalBondedStr, SSD.decimals);
@@ -130,6 +246,15 @@ function Pool({ user }: {user: string}) {
       const legacyUserRewardedBalance = toTokenUnitsBN(legacyRewardedBalance, UNI.decimals);
       const legacyUserClaimableBalance = toTokenUnitsBN(legacyClaimableBalance, SSD.decimals);
       const legacyUserStatus = parseInt(legacyStatus, 10);
+      const userSSDBalance = toTokenUnitsBN(userSSDBalanceStr, SSD.decimals);
+      const userESDBalance = toTokenUnitsBN(userESDBalanceStr, ESD.decimals);
+      const userDSDBalance = toTokenUnitsBN(userDSDBalanceStr, DSD.decimals);
+      const userTSDBalance = toTokenUnitsBN(userDSDBalanceStr, TSD.decimals);
+      const userZAIBalance = toTokenUnitsBN(userZaiBalanceStr, ZAI.decimals);
+      const userUSDTBalance = toTokenUnitsBN(userUSDTBalanceStr, USDT.decimals);
+      const userDAIBalance = toTokenUnitsBN(userDAIBalanceStr, DAI.decimals);
+      const userWETHBalance = toTokenUnitsBN(userWETHBalanceStr, WETH.decimals);
+      const userWBTCBalance = toTokenUnitsBN(userWBTCBalanceStr, WBTC.decimals);
 
       if (!isCancelled) {
         setPoolAddress(poolAddressStr);
@@ -152,40 +277,68 @@ function Pool({ user }: {user: string}) {
         setLegacyUserClaimableBalance(new BigNumber(legacyUserClaimableBalance));
         setLegacyUserStatus(legacyUserStatus);
         setLockup(poolAddressStr === DollarPool4 ? POOL_EXIT_LOCKUP_EPOCHS : 1);
+        setFluidStatus(fluidStatusStr);
+        setZapUSDCAllowance(new BigNumber(zapUSDCAllowance));
+        setZapSSDAllowance(new BigNumber(zapSSDAllowance));
+        setZapESDAllowance(new BigNumber(zapESDAllowance));
+        setZapDSDAllowance(new BigNumber(zapDSDAllowance));
+        setZapTSDAllowance(new BigNumber(zapTSDAllowance));
+        setZapZaiAllowance(new BigNumber(zapZaiAllowance));
+        setZapDAIAllowance(new BigNumber(zapDAIAllowance));
+        setZapUSDTAllowance(new BigNumber(zapUSDTAllowance));
+        setZapWETHAllowance(new BigNumber(zapWETHAllowance));
+        setZapWBTCAllowance(new BigNumber(zapWBTCAllowance));
+        setUserSSDBalance(new BigNumber(userSSDBalance));
+        setUserESDBalance(new BigNumber(userESDBalance));
+        setUserDSDBalance(new BigNumber(userDSDBalance));
+        setUserZaiBalance(new BigNumber(userZAIBalance));
+        setUserUSDTBalance(new BigNumber(userUSDTBalance));
+        setUserDAIBalance(new BigNumber(userDAIBalance));
+        setUserWETHBalance(new BigNumber(userWETHBalance));
+        setUserWBTCBalance(new BigNumber(userWBTCBalance));
       }
     }
     updateUserInfo();
     const id = setInterval(updateUserInfo, 15000);
+    const apr = setInterval(updateAPR, 15000);
 
     // eslint-disable-next-line consistent-return
     return () => {
       isCancelled = true;
       clearInterval(id);
+      clearInterval(apr)
     };
   }, [user]);
   // Check for error in .call()
   const isRewardedNegative = legacyUserRewardedBalance.isGreaterThan(new BigNumber("1000000000000000000"));
   const hasLegacyBalance = legacyUserStagedBalance.isGreaterThan(0) || legacyUserClaimableBalance.isGreaterThan(0) || legacyUserBondedBalance.isGreaterThan(0);
+
   return (
     <>
       <IconHeader icon={<i className="fas fa-parachute-box"/>} text="LP Reward Pool"/>
 
-      {hasLegacyBalance ?
-        <>
-          <Header primary={"Legacy Pool Migration"}/>
+      <Invest
+        totalSupply={totalSupply}
+        SSDLPBonded={pairBalanceSSD}
+      />
 
-          <Migrate
-            legacyPoolAddress={getLegacyPoolAddress(poolAddress)}
-            isRewardNegative={isRewardedNegative}
-            staged={legacyUserStagedBalance}
-            claimable={legacyUserClaimableBalance}
-            bonded={legacyUserBondedBalance}
-            status={legacyUserStatus}
-          />
-        </>
-        : ''}
+      {/*{hasLegacyBalance ?*/}
+      {/*  <>*/}
+      {/*    <Header primary={"Legacy Pool Migration"}/>*/}
+
+      {/*    <Migrate*/}
+      {/*      legacyPoolAddress={getLegacyPoolAddress(poolAddress)}*/}
+      {/*      isRewardNegative={isRewardedNegative}*/}
+      {/*      staged={legacyUserStagedBalance}*/}
+      {/*      claimable={legacyUserClaimableBalance}*/}
+      {/*      bonded={legacyUserBondedBalance}*/}
+      {/*      status={legacyUserStatus}*/}
+      {/*    />*/}
+      {/*  </>*/}
+      {/*  : ''}*/}
 
       <PoolPageHeader
+        user={user}
         accountUNIBalance={userUNIBalance}
         accountBondedBalance={userBondedBalance}
         accountRewardedSSDBalance={userRewardedBalance}
@@ -193,6 +346,34 @@ function Pool({ user }: {user: string}) {
         poolTotalBonded={poolTotalBonded}
         accountPoolStatus={userStatus}
         unlocked={userStatusUnlocked}
+        fluidEpoch={fluidStatus?.fluidEpoch}
+      />
+
+      <AddUni
+        user={user}
+        accountUNIBalance={userUNIBalance}
+        balanceSSD={userSSDBalance}
+        balanceUSDC={userUSDCBalance}
+        balanceUSDT={userUSDTBalance}
+        balanceDAI={userDAIBalance}
+        balanceESD={userESDBalance}
+        balanceDSD={userDSDBalance}
+        balanceTSD={userTSDBalance}
+        balanceZAI={userZaiBalance}
+        balanceWETH={userWETHBalance}
+        balanceWBTC={userWBTCBalance}
+
+        zapUSDCAllowance={zapUSDCAllowance}
+        zapUSDTAllowance={zapUSDTAllowance}
+        zapDAIAllowance={zapDAIAllowance}
+        zapSSDAllowance={zapSSDAllowance}
+        zapESDAllowance={zapESDAllowance}
+        zapDSDAllowance={zapDSDAllowance}
+        zapTSDAllowance={zapTSDAllowance}
+        zapZAIAllowance={zapZaiAllowance}
+        zapWETHAllowance={zapWETHAllowance}
+        zapWBTCAllowance={zapWBTCAllowance}
+
       />
 
       <WithdrawDeposit

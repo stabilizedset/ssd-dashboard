@@ -40,8 +40,11 @@ function Regulation({ user }: {user: string}) {
 
       const [
         totalSupplyStr,
-        totalBondedStr, totalStagedStr, totalRedeemableStr,
-        poolLiquidityStr, poolTotalRewardedStr, poolTotalClaimableStr,
+        totalBondedStr,
+        totalStagedStr,
+        totalRedeemableStr,
+        poolLiquidityStr,
+        poolTotalRewardedStr, poolTotalClaimableStr,
         legacyPoolTotalRewardedStr, legacyPoolTotalClaimableStr,
         totalDebtStr, totalCouponsStr
       ] = await Promise.all([

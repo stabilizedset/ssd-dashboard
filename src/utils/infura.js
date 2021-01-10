@@ -2,14 +2,20 @@ import Web3 from 'web3';
 
 import BigNumber from 'bignumber.js';
 import { UniswapV2Router02 } from '../constants/contracts';
-import { SSD, UNI, USDC } from '../constants/tokens';
+import {
+  DAI,
+  SSD, UNI, ZAP_PIPE, USDC, ZAP,
+} from '../constants/tokens';
 import { POOL_EXIT_LOCKUP_EPOCHS } from '../constants/values';
+import { notify } from './txNotifier';
 
 const dollarAbi = require('../constants/abi/Dollar.json');
 const daoAbi = require('../constants/abi/Implementation.json');
 const poolAbi = require('../constants/abi/Pool.json');
 const uniswapRouterAbi = require('../constants/abi/UniswapV2Router02.json');
 const uniswapPairAbi = require('../constants/abi/UniswapV2Pair.json');
+const zapAbi = require('../constants/abi/Zap.json');
+const zapPipeAbi = require('../constants/abi/ZapPipe.json');
 
 let web3;
 // eslint-disable-next-line no-undef
@@ -28,6 +34,18 @@ export const getTokenBalance = async (token, account) => {
   if (account === '') return '0';
   const tokenContract = new web3.eth.Contract(dollarAbi, token);
   return tokenContract.methods.balanceOf(account).call();
+};
+
+/**
+ *
+ * @param {string} account address
+ * @return {Promise<string>}
+ */
+export const getBalanceEth = async (account) => {
+  if (account === '') return '0';
+  // const tokenContract = new web3();
+  // console.log(web3.getBalance());
+  // return tokenContract.methods.balanceOf(account).call();
 };
 
 export const getTokenTotalSupply = async (token) => {
@@ -59,6 +77,27 @@ export const getBalanceBonded = async (dao, account) => {
   if (account === '') return '0';
   const daoContract = new web3.eth.Contract(daoAbi, dao);
   return daoContract.methods.balanceOfBonded(account).call();
+};
+
+/**
+ *
+ * @param {string} dao address
+ * @param {string} account address
+ * @return {Promise<{fluidEpoch: number, lastBond: number, lastUnbond: number}>}
+ */
+
+export const loadFluidStatusDao = async (dao, account) => {
+  const daoContract = new web3.eth.Contract(daoAbi, dao);
+  const bondP = await daoContract.getPastEvents('Bond', { filter: { account }, fromBlock: 0 });
+  const unbondP = await daoContract.getPastEvents('Unbond', { filter: { account }, fromBlock: 0 });
+
+  if (bondP.length + unbondP.length > 0) {
+    const lastUnbond = Math.max(...unbondP.map((u) => u.returnValues.start / 1));
+    const lastBond = Math.max(...bondP.map((d) => d.returnValues.start / 1));
+    const fluidEpoch = Math.max(lastUnbond, lastBond);
+
+    return { lastUnbond, lastBond, fluidEpoch: fluidEpoch - 1 };
+  }
 };
 
 /**
@@ -358,8 +397,8 @@ export const getCouponEpochs = async (dao, account) => {
     fromBlock: 0,
   });
   const [bought, given] = await Promise.all([purchaseP, transferP]);
-  const events = bought.map((e) => ({epoch: e.returnValues.epoch, amount: e.returnValues.couponAmount}))
-    .concat(given.map((e) => ({epoch: e.returnValues.epoch, amount: 0})));
+  const events = bought.map((e) => ({ epoch: e.returnValues.epoch, amount: e.returnValues.couponAmount }))
+    .concat(given.map((e) => ({ epoch: e.returnValues.epoch, amount: 0 })));
 
   const couponEpochs = [
     ...events.reduce(
@@ -461,11 +500,40 @@ export const getToken0 = async () => {
   return exchange.methods.token0().call();
 };
 
+export const getTotalSupplyUni = async () => {
+  const tokenContract = new web3.eth.Contract(uniswapPairAbi, UNI.addr);
+  return tokenContract.methods.totalSupply().call();
+};
+
+export const getPrice0CumulativeLast = async () => {
+  const price0 = new web3.eth.Contract(uniswapPairAbi, UNI.addr);
+  return price0.methods.price0CumulativeLast().call();
+};
+
+export const getPrice1CumulativeLast = async () => {
+  const price0 = new web3.eth.Contract(uniswapPairAbi, UNI.addr);
+  return price0.methods.price1CumulativeLast().call();
+};
+
 // Pool
 
 export const getPoolStatusOf = async (pool, account) => {
   const poolContract = new web3.eth.Contract(poolAbi, pool);
   return poolContract.methods.statusOf(account).call();
+};
+
+export const loadFluidStatusPool = async (pool, account) => {
+  const poolContract = new web3.eth.Contract(poolAbi, pool);
+  const bondP = await poolContract.getPastEvents('Bond', { filter: { account }, fromBlock: 0 });
+  const unbondP = await poolContract.getPastEvents('Unbond', { filter: { account }, fromBlock: 0 });
+
+  if (bondP.length + unbondP.length > 0) {
+    const lastUnbond = Math.max(...unbondP.map((u) => u.returnValues.start / 1));
+    const lastBond = Math.max(...bondP.map((d) => d.returnValues.start / 1));
+    const fluidEpoch = Math.max(lastUnbond, lastBond);
+
+    return { lastUnbond, lastBond, fluidEpoch: fluidEpoch - 1 };
+  }
 };
 
 /**
@@ -531,6 +599,17 @@ export const getPoolTotalBonded = async (pool) => {
  * @param {string} account address
  * @return {Promise<string>}
  */
+export const getPoolTotalStaged = async (pool) => {
+  const poolContract = new web3.eth.Contract(poolAbi, pool);
+  return poolContract.methods.totalStaged().call();
+};
+
+/**
+ *
+ * @param {string} pool address
+ * @param {string} account address
+ * @return {Promise<string>}
+ */
 export const getPoolTotalRewarded = async (pool) => {
   const poolContract = new web3.eth.Contract(poolAbi, pool);
   return poolContract.methods.totalRewarded().call();
@@ -559,10 +638,8 @@ export const getPoolFluidUntil = async (pool, account) => {
   // no need to look back further than the pool lockup period
   const blockNumber = await web3.eth.getBlockNumber();
   const fromBlock = blockNumber - (POOL_EXIT_LOCKUP_EPOCHS + 1) * 8640;
-  const bondP = poolContract.getPastEvents('Bond', {
-    filter: {account: account}, fromBlock: fromBlock });
-  const unbondP = poolContract.getPastEvents('Unbond', {
-    filter: {account: account}, fromBlock: fromBlock });
+  const bondP = poolContract.getPastEvents('Bond', { filter: { account }, fromBlock });
+  const unbondP = poolContract.getPastEvents('Unbond', { filter: { account }, fromBlock });
 
   const [bond, unbond] = await Promise.all([bondP, unbondP]);
   const events = bond.map((e) => e.returnValues)
@@ -570,13 +647,84 @@ export const getPoolFluidUntil = async (pool, account) => {
 
   const startEpoch = events.reduce(
     (epoch, event) => {
-      if (epoch > event.start)
-        return epoch
-      else
-        return event.start
-    }, 0);
+      if (epoch > event.start) return epoch;
+      return event.start;
+    }, 0,
+  );
 
   // these contract events report the start epoch as one more than the active
   // epoch when the event is emitted, so we subtract 1 here to adjust
   return (parseInt(startEpoch, 10) + POOL_EXIT_LOCKUP_EPOCHS - 1).toString();
+};
+
+/**
+ *
+ * @param {string} account address
+ * @param amount
+ * @param fromAddress
+ * @return {Promise<string>}
+ */
+export const buyUniV2 = async (account, amount, fromAddress) => {
+  const address = '0x0000000000000000000000000000000000000000';
+  const zapContract = new web3.eth.Contract(zapAbi, ZAP.addr);
+
+  return zapContract.methods.ZapIn(
+    fromAddress, UNI.addr, new BigNumber(amount).toFixed(), 0, address, address,
+    address,
+  ).send({
+    from: account,
+  }).on('transactionHash', (hash) => {
+    notify.hash(hash);
+  });
+};
+
+export const buyUniV2FromProxy = async (account, amount, fromAddress, isZai = false) => {
+  const address = '0xDef1C0ded9bec7F1a1670819833240f027b25EfF';
+  const zapContract = new web3.eth.Contract(zapAbi, ZAP.addr);
+  const swapdata = web3.eth.abi.encodeFunctionCall(
+    {
+      name: 'sellToUniswap',
+      type: 'function',
+      inputs: [
+        {
+          type: 'address[]',
+          name: 'tokens',
+        },
+        {
+          type: 'uint256',
+          name: 'sellAmount',
+        },
+        {
+          type: 'uint256',
+          name: 'minBuyAmount',
+        },
+        {
+          type: 'bool',
+          name: 'isSushi',
+        },
+      ],
+    }, [
+      isZai ? [fromAddress, DAI.addr, USDC.addr] : [fromAddress, USDC.addr], new BigNumber(amount).toFixed(), 0, false,
+    ],
+  );
+
+  return zapContract.methods.ZapIn(
+    fromAddress, UNI.addr, new BigNumber(amount).toFixed(), 0, address, address, swapdata,
+  ).send({
+    from: account,
+  }).on('transactionHash', (hash) => {
+    notify.hash(hash);
+  });
+};
+
+export const migrateUniV2 = async (account, amount, addressUni) => {
+  const zapContract = new web3.eth.Contract(zapPipeAbi, ZAP_PIPE.addr);
+
+  return zapContract.methods.PipeUniV2(
+    account, addressUni, new BigNumber(amount).toFixed(), UNI.addr, 0,
+  ).send({
+    from: account,
+  }).on('transactionHash', (hash) => {
+    notify.hash(hash);
+  });
 };

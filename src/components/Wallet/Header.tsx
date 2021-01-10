@@ -1,9 +1,12 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import BigNumber from 'bignumber.js';
+import {Button} from '@aragon/ui';
+import styled from 'styled-components'
 
-import { BalanceBlock } from '../common/index';
+import {BalanceBlock} from '../common/index';
 import TextBlock from "../common/TextBlock";
 import {ownership} from "../../utils/number";
+import {UNISWAP_TRADE} from "../../constants/contracts";
 
 type AccountPageHeaderProps = {
   accountSSDBalance: BigNumber,
@@ -13,35 +16,79 @@ type AccountPageHeaderProps = {
   accountBondedBalance: BigNumber,
   accountStatus: number,
   unlocked: number,
+  fluidEpoch: any,
+  user: string
 };
 
 const STATUS_MAP = ["Unlocked", "Locked", "Locked"];
 
-function status(accountStatus, unlocked) {
-  return STATUS_MAP[accountStatus] + (accountStatus === 0 ? "" : " until " + unlocked)
+function status(accountStatus) {
+  return STATUS_MAP[accountStatus]
 }
 
 const AccountPageHeader = ({
-  accountSSDBalance, accountSSDSBalance, totalSSDSSupply, accountStagedBalance, accountBondedBalance, accountStatus, unlocked
-}: AccountPageHeaderProps) => (
-  <div style={{ padding: '2%', display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
-    <div style={{ flexBasis: '20%' }}>
-      <BalanceBlock asset="Balance" balance={accountSSDBalance} suffix={" SSD"}/>
-    </div>
-    <div style={{ flexBasis: '20%' }}>
-      <BalanceBlock asset="Staged" balance={accountStagedBalance}  suffix={" SSD"}/>
-    </div>
-    <div style={{ flexBasis: '20%' }}>
-      <BalanceBlock asset="Bonded" balance={accountBondedBalance} suffix={" SSD"} />
-    </div>
-    <div style={{ flexBasis: '20%' }}>
-      <BalanceBlock asset="DAO Ownership" balance={ownership(accountSSDSBalance, totalSSDSSupply)}  suffix={"%"}/>
-    </div>
-    <div style={{ flexBasis: '20%' }}>
-      <TextBlock label="Status" text={status(accountStatus, unlocked)}/>
-    </div>
-  </div>
-);
+                             accountSSDBalance,
+                             accountSSDSBalance,
+                             totalSSDSSupply,
+                             accountStagedBalance,
+                             accountBondedBalance,
+                             accountStatus,
+                             unlocked,
+                             fluidEpoch,
+                             user
+                           }: AccountPageHeaderProps) => {
+
+  return (
+    <Container>
+      <div>
+        <BalanceBlock asset="Balance" balance={accountSSDBalance} suffix={" SSD"}/>
+        <Button
+          label="Buy SSD"
+          icon={<i className="fas fa-exchange-alt"/>}
+          onClick={() => window.open(UNISWAP_TRADE, "_blank")}
+        />
+      </div>
+      <div>
+        <BalanceBlock asset="Staged" balance={accountStagedBalance} suffix={" SSD"}/>
+      </div>
+      <div>
+        <BalanceBlock asset="Bonded" balance={accountBondedBalance} suffix={" SSD"}/>
+      </div>
+      <div>
+        <BalanceBlock asset="DAO Ownership" balance={ownership(accountSSDSBalance, totalSSDSSupply)} suffix={"%"}/>
+      </div>
+      <div>
+        <TextBlock label="Status" text={status(accountStatus)}/>
+        {
+          user !== '' && (
+            <Fragment>
+              <p>{
+                isNaN(fluidEpoch)
+                  ? 'You did not bonded or unbonded before.'
+                  : `You last bonded or unbonded at epoch ${fluidEpoch}.`
+              } </p>
+              {
+                accountStatus !== 0 && (
+                  <p>Unlocked at epoch {fluidEpoch + 72}.</p>
+                )
+              }
+            </Fragment>
+          )
+        }
+      </div>
+    </Container>
+  );
+}
+
+const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  padding: 2%;
+  justify-content: space-between;
+  @media (max-width: 522px) {
+    display: block;
+  }
+`
 
 
 export default AccountPageHeader;

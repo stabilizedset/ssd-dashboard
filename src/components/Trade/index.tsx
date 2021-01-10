@@ -65,7 +65,7 @@ function UniswapPool({ user }: {user: string}) {
         <div style={{ flexBasis: '30%' }}>
           <MainButton
             title="Trade"
-            description="Trade SSD tokens."
+            description="Trade døllar tokens."
             icon={<i className="fas fa-exchange-alt"/>}
             href={UNISWAP_TRADE}
           />

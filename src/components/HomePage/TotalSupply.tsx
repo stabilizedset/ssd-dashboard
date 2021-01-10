@@ -12,17 +12,18 @@ const TotalSupply = ({totalSupply}:TotalSupplyProps) => {
 
   return (
     <div>
-      <div style={{fontSize: 16, padding: 0}}>Total Supply <Icon src="./images/etherscan.png"
-      onClick={()=> window.open('https://etherscan.io/token/0x7bf5898a9c24818a90d9763bbf4cd1432645c17f', '_blank')}
+      <div style={{fontSize: 16, padding: 3}}>Total Supply <Icon src="./images/etherscan.png"
+      onClick={()=> window.open('https://etherscan.io/token/0x4846239fdf4d4c1aeb26729fa064b0205aca90e1', '_blank')}
       /></div>
       <div style={{
         fontSize: 24,
-        padding: 1,
+        padding: 3,
         fontWeight: 400,
         lineHeight: 1.5,
         fontFamily: 'aragon-ui-monospace, monospace'
-      }}>{formatNumber((totalSupply.toNumber()).toFixed(2))}
+      }}>{formatNumber((totalSupply.toNumber()).toFixed(2)) } SSD
       </div>
+      <div style={{fontSize: 16, padding: 3}}>Status: <strong>EXPANSION (+{((totalSupply.toNumber()*4)/100).toFixed()} next epoch)</strong></div>
     </div>
   );
 };

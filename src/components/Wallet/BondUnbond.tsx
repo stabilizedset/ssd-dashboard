@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Box, Button, IconCirclePlus, IconCircleMinus, IconCaution
 } from '@aragon/ui';
@@ -6,11 +6,12 @@ import BigNumber from 'bignumber.js';
 import {
   BalanceBlock, MaxButton,
 } from '../common/index';
-import { bond, unbondUnderlying } from '../../utils/web3';
+import {bond, unbondUnderlying} from '../../utils/web3';
 import {isPos, toBaseUnitBN} from '../../utils/number';
-import { SSD, SSDS } from "../../constants/tokens";
+import {SSD, SSDS} from "../../constants/tokens";
 import BigNumberInput from "../common/BigNumberInput";
 import TextBlock from "../common/TextBlock";
+import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 type BondUnbondProps = {
   staged: BigNumber,
@@ -20,8 +21,8 @@ type BondUnbondProps = {
 };
 
 function BondUnbond({
-  staged, bonded, status, lockup
-}: BondUnbondProps) {
+                      staged, bonded, status, lockup
+                    }: BondUnbondProps) {
   const [bondAmount, setBondAmount] = useState(new BigNumber(0));
   const [unbondAmount, setUnbondAmount] = useState(new BigNumber(0));
 
@@ -54,18 +55,38 @@ function BondUnbond({
               </>
             </div>
             <div style={{width: '40%', minWidth: '7em'}}>
-              <Button
-                wide
-                icon={status === 0 ? <IconCirclePlus/> : <IconCaution/>}
-                label="Bond"
-                onClick={() => {
-                  bond(
-                    SSDS.addr,
-                    toBaseUnitBN(bondAmount, SSD.decimals),
-                  );
-                }}
-                disabled={status === 2 || !isPos(bondAmount) || bondAmount.isGreaterThan(staged)}
-              />
+              {
+                (status === 2 || !isPos(bondAmount) || bondAmount.isGreaterThan(staged))
+                  ? <OverlayTrigger
+                    placement="bottom"
+                    overlay={
+                      <Tooltip id="tooltip">
+                        Make sure the value &gt; 0
+                      </Tooltip>
+                    }
+                  >
+                    <div style={{display: 'inline-block', cursor: 'not-allowed'}}>
+                      <Button
+                        style={{pointerEvents: 'none'}}
+                        wide
+                        icon={status === 0 ? <IconCirclePlus/> : <IconCaution/>}
+                        label="Bond"
+                        disabled={status === 2 || !isPos(bondAmount) || bondAmount.isGreaterThan(staged)}
+                      />
+                    </div>
+                  </OverlayTrigger>
+                  : <Button
+                    wide
+                    icon={status === 0 ? <IconCirclePlus/> : <IconCaution/>}
+                    label="Bond"
+                    onClick={() => {
+                      bond(
+                        SSDS.addr,
+                        toBaseUnitBN(bondAmount, SSD.decimals),
+                      );
+                    }}
+                  />
+              }
             </div>
           </div>
         </div>
@@ -88,24 +109,44 @@ function BondUnbond({
               </>
             </div>
             <div style={{width: '40%', minWidth: '7em'}}>
-              <Button
-                wide
-                icon={status === 0 ? <IconCircleMinus/> : <IconCaution/>}
-                label="Unbond"
-                onClick={() => {
-                  unbondUnderlying(
-                    SSDS.addr,
-                    toBaseUnitBN(unbondAmount, SSD.decimals),
-                  );
-                }}
-                disabled={status === 2 || !isPos(unbondAmount) || unbondAmount.isGreaterThan(bonded)}
-              />
+              {
+                (status === 2 || !isPos(unbondAmount) || unbondAmount.isGreaterThan(bonded))
+                  ? <OverlayTrigger
+                    placement="bottom"
+                    overlay={
+                      <Tooltip id="tooltip">
+                        Make sure the value &gt; 0
+                      </Tooltip>
+                    }
+                  >
+                    <div style={{display: 'inline-block', cursor: 'not-allowed'}}>
+                      <Button
+                        style={{pointerEvents: 'none'}}
+                        wide
+                        icon={status === 0 ? <IconCircleMinus/> : <IconCaution/>}
+                        label="Unbond"
+                        disabled={status === 2 || !isPos(unbondAmount) || unbondAmount.isGreaterThan(bonded)}
+                      />
+                    </div>
+                  </OverlayTrigger>
+                  : <Button
+                    wide
+                    icon={status === 0 ? <IconCircleMinus/> : <IconCaution/>}
+                    label="Unbond"
+                    onClick={() => {
+                      unbondUnderlying(
+                        SSDS.addr,
+                        toBaseUnitBN(unbondAmount, SSD.decimals),
+                      );
+                    }}
+                  />
+              }
             </div>
           </div>
         </div>
       </div>
       <div style={{width: '100%', paddingTop: '2%', textAlign: 'center'}}>
-        <span style={{ opacity: 0.5 }}> Bonding events will restart the lockup timer </span>
+        <span style={{opacity: 0.5}}> Bonding events will restart the lockup timer.</span>
       </div>
     </Box>
   );
