@@ -23,7 +23,7 @@ const Trade = ({pairBalanceSSD, pairBalanceUSDC, uniswapPair}: TradeProps) => {
           <Button
             label="Buy SSD"
             className="button-home"
-            icon={<img height="28" src="./home/SSD.png"/>}
+            icon={<img height="28" src="/home/SSD.png"/>}
             onClick={() => window.open(UNISWAP_TRADE, "_blank")}
           />
         </div>

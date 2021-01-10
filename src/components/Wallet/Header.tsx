@@ -69,7 +69,7 @@ const AccountPageHeader = ({
               } </p>
               {
                 accountStatus !== 0 && (
-                  <p>Unlocked at epoch {fluidEpoch + 72}.</p>
+                  <p>Unlocked at epoch {fluidEpoch + 24}.</p>
                 )
               }
             </Fragment>

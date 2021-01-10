@@ -19,7 +19,7 @@ const EpochPageHeader = ({
       <NumberBlock title="Available" num={epochTime} />
     </div>
     <div style={{ width: '25%' }}>
-      <TextBlock label="Period" text="1 hour"/>
+      <TextBlock label="Period" text="2 hours"/>
     </div>
   </div>
 );

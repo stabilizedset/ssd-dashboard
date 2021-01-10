@@ -67,7 +67,7 @@ const PoolPageHeader = ({
             } </p>
             {
               accountPoolStatus !== 0 && (
-                <p>Unlocked at epoch {fluidEpoch + 24}.</p>
+                <p>Unlocked at epoch {fluidEpoch + 12}.</p>
               )
             }
           </Fragment>
