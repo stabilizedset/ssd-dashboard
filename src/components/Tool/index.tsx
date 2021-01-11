@@ -133,7 +133,7 @@ function Tool() {
       </div>
       <div>
         <Title>TWAP Price</Title>
-        <p>N/A (Bootstrapping price - $1.44)</p>
+        <p>N/A (Bootstrapping price - $1.54)</p>
       </div>
       <div>
         <Title>Epoch</Title>

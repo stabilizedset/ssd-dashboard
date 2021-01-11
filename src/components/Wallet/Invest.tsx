@@ -65,7 +65,7 @@ const Invest = ({totalSupply, totalBonded}: InvestProps) => {
 
           <p className="mt-2">Step 4: Bond your SSD into DAO</p>
 
-          <p className="mt-2">Step 5: Unbond and wait 72 hours to claim your rewards</p>
+          <p className="mt-2">Step 5: Unbond and wait 48 hours to claim your rewards</p>
         </Box>
       </ContainerItem>
     </Container>
