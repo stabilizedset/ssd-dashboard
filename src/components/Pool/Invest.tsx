@@ -19,7 +19,7 @@ const Invest = ({totalSupply, SSDLPBonded}: InvestProps) => {
       <ContainerItem style={{flexBasis: '30%', flexGrow: 1, marginRight: '2%'}}>
         <Box>
           <div>
-            <div style={{fontSize: 16, padding: 3}}>APR</div>
+            <div style={{fontSize: 16, padding: 3}}>APY</div>
             <div style={{fontSize: 16, padding: 3}}>LP hourly:
               <div style={{
                 fontSize: 24,

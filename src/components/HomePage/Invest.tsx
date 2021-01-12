@@ -23,7 +23,7 @@ const Invest = ({totalSupply, totalBonded, SSDLPBonded}: InvestProps) => {
       <Container className="box-invest">
         <div>
           <div>
-            <div style={{fontWeight: 'bold', fontSize: 25}}>DAO APR</div>
+            <div style={{fontWeight: 'bold', fontSize: 25}}>DAO APY</div>
             <div className="invest" style={{fontSize: 16, padding: 3}}>
               <div>DAO hourly:</div>
               <div style={{
@@ -72,7 +72,7 @@ const Invest = ({totalSupply, totalBonded, SSDLPBonded}: InvestProps) => {
         <div>
           <div>
             <div>
-              <div style={{fontWeight: 'bold', fontSize: 25}}>Liquidity Pool APR</div>
+              <div style={{fontWeight: 'bold', fontSize: 25}}>Liquidity Pool APY</div>
               <div className="invest" style={{fontSize: 16, padding: 3}}>LP hourly:
                 <div style={{
                   fontSize: 24,

@@ -16,7 +16,7 @@ const Invest = ({totalSupply, totalBonded}: InvestProps) => {
       <ContainerItem style={{flexBasis: '30%', marginRight: '2%'}}>
         <Box>
           <div>
-            <div style={{fontSize: 16, padding: 3}}>APR</div>
+            <div style={{fontSize: 16, padding: 3}}>APY</div>
             <div style={{fontSize: 16, padding: 3}}>DAO hourly:
               <div style={{
                 fontSize: 24,
